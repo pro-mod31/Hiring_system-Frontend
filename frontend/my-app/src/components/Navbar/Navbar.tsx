@@ -9,12 +9,13 @@ const Navbar = () => {
   const location = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => setIsMenuOpen(false), [location.pathname]);
 
   const navItems = [
     { name: "Home", path: "/" },
@@ -32,30 +33,30 @@ const Navbar = () => {
 
   return (
     <header
-      className={`sticky top-0 z-90 w-full border-b backdrop-blur-md transition-colors duration-300 ${
-        scrolled ? "bg-white/20" : "bg-white/85"
+      className={`sticky top-0 z-50 w-full border-b backdrop-blur-md transition-colors duration-300 ${
+        scrolled ? "bg-white/70" : "bg-white"
       }`}
     >
-      <div className="mx-auto px-9 sm:px-8 lg:px-8">
-        <div className="flex h-10 items-center justify-between p-6">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 font-bold text-xl text-black">
-            <div className="p-4 rounded-lg">
-              <Briefcase className="h-6 w-6 text-primary-foreground" />
+          <Link to="/" className="flex items-center gap-2 text-lg font-bold text-black">
+            <div className="p-2 rounded-lg bg-black">
+              <Briefcase className="h-5 w-5 text-white" />
             </div>
-            <span className="text-sm font-bold">HireFlow</span>
+            HireFlow
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8 pY-6">
+          <nav className="hidden md:flex items-center gap-8 py-6">
             {navItems.map((item) => (
               <Link
                 key={item.name}
                 to={item.path}
-                className={`text-lg font-small transition-colors hover:text-primary ${
+                className={`text-sm font-medium transition-colors ${
                   isActive(item.path)
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground"
+                    ? "text-black border-b-2 border-black"
+                    : "text-gray-600 hover:text-black"
                 }`}
               >
                 {item.name}
@@ -64,18 +65,19 @@ const Navbar = () => {
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3">
             {dashboardItems.map((item) => (
               <Button
                 key={item.name}
-                variant={isActive(item.path) ? "default" : "outline"}
                 size="sm"
+                variant={isActive(item.path) ? "default" : "outline"}
                 asChild
               >
                 <Link to={item.path}>{item.name}</Link>
               </Button>
             ))}
-            <Button variant="outline" size="sm" asChild>
+
+            <Button size="sm" variant="outline" asChild>
               <Link to="/login">Sign In</Link>
             </Button>
           </div>
@@ -86,6 +88,7 @@ const Navbar = () => {
             size="icon"
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -99,31 +102,28 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive(item.path) ? "text-primary" : "text-muted-foreground"
+                  className={`text-sm font-medium transition-colors ${
+                    isActive(item.path) ? "text-black" : "text-gray-600"
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
                 </Link>
               ))}
+
               <div className="flex flex-col gap-2 pt-4 border-t">
                 {dashboardItems.map((item) => (
                   <Button
                     key={item.name}
-                    variant={isActive(item.path) ? "default" : "outline"}
                     size="sm"
+                    variant={isActive(item.path) ? "default" : "outline"}
                     asChild
                   >
-                    <Link to={item.path} onClick={() => setIsMenuOpen(false)}>
-                      {item.name}
-                    </Link>
+                    <Link to={item.path}>{item.name}</Link>
                   </Button>
                 ))}
-                <Button variant="outline" asChild>
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                    Sign In
-                  </Link>
+
+                <Button size="sm" variant="outline" asChild>
+                  <Link to="/login">Sign In</Link>
                 </Button>
               </div>
             </nav>
